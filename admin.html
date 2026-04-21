@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - FOKUS™</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --primary: #4259A8; --dark: #282828; --off-white: #F0EFEF; --success: #4CAF50; --danger: #e74c3c; }
+        body { font-family: 'Georgia', serif; background: #f5f5f5; color: var(--dark); }
+
+        .admin-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .admin-header h1 { font-size: 1.4em; font-weight: normal; letter-spacing: 2px; }
+        .save-all-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .save-all-btn:hover { background: var(--off-white); transform: translateY(-1px); }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-bottom: 2px solid #eee;
+            padding: 0 40px;
+            gap: 0;
+        }
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            font-size: 1em;
+            color: #888;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        .tab:hover { color: var(--primary); }
+        .tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: bold; }
+
+        .tab-content { display: none; padding: 40px; max-width: 900px; margin: 0 auto; }
+        .tab-content.active { display: block; }
+
+        .section-group {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .section-group h3 {
+            font-size: 1.1em;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--off-white);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .field-group { margin-bottom: 18px; }
+        .field-group label {
+            display: block;
+            font-size: 0.85em;
+            color: #888;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .field-group input[type="text"],
+        .field-group textarea,
+        .field-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1em;
+            color: var(--dark);
+            transition: border-color 0.2s;
+            background: #fafafa;
+            resize: vertical;
+        }
+        .field-group input:focus,
+        .field-group textarea:focus,
+        .field-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+        }
+        .field-group textarea { min-height: 80px; }
+        .field-group textarea.tall { min-height: 140px; }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--success);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 1em;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.error { background: var(--danger); }
+
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+            font-size: 1.2em;
+            color: var(--primary);
+        }
+        .loading-overlay.hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">Učitavanje sadržaja...</div>
+
+<div class="admin-header">
+    <h1>FOKUS™ — Admin Panel</h1>
+    <button class="save-all-btn" onclick="saveAll()">💾 Spremi sve promjene</button>
+</div>
+
+<div class="tabs">
+    <div class="tab active" onclick="switchTab('index')">Početna</div>
+    <div class="tab" onclick="switchTab('omeni')">O meni</div>
+    <div class="tab" onclick="switchTab('kontakt')">Kontakt</div>
+</div>
+
+<!-- INDEX TAB -->
+<div class="tab-content active" id="tab-index">
+
+    <div class="section-group">
+        <h3>Hero sekcija</h3>
+        <div class="field-group"><label>Naslov</label><textarea data-table="index_content" data-id="hero_title"></textarea></div>
+        <div class="field-group"><label>Podnaslov 1</label><textarea data-table="index_content" data-id="hero_subtitle_1"></textarea></div>
+        <div class="field-group"><label>Podnaslov 2</label><textarea data-table="index_content" data-id="hero_subtitle_2"></textarea></div>
+        <div class="field-group"><label>Tekst gumba</label><input type="text" data-table="index_content" data-id="hero_cta"></div>
+    </div>
+
+    <div class="section-group">
+        <h3>O meni (kratki tekst na početnoj)</h3>
+        <div class="field-group"><label>Naslov sekcije</label><input type="text" data-table="index_content" data-id="about_section_title"></div>
+        <div class="field-group"><label>Paragraf 1</label><textarea data-table="index_content" data-id="about_p1"></textarea></div>
+        <div class="field-group"><label>Paragraf 2</label><textarea data-table="index_content" data-id="about_p2"></textarea></div>
+        <div class="field-group"><label>Paragraf 3</label><textarea data-table="index_content" data-id="about_p3"></textarea></div>
+    </div>
+
+    <div class="section-group">
+        <h3>FOKUS™ uvod</h3>
+        <div class="field-group"><label>Citat</label><input type="text" data-table="index_content" data-id="fokus_intro_quote"></div>
+        <div class="field-group"><label>Paragraf 1</label><textarea class="tall" data-table="index_content" data-id="fokus_intro_p1"></textarea></div>
+        <div class="field-group"><label>Paragraf 2</label><textarea class="tall" data-table="index_content" data-id="fokus_intro_p2"></textarea></div>
+        <div class="field-group"><label>Paragraf 3</label><textarea data-table="index_content" data-id="fokus_intro_p3"></textarea></div>
+        
+        <!-- NOVI PARAGRAF 4 -->
+        <div class="field-group">
+            <label>Paragraf 4 - Format</label>
+            <select data-table="index_content" data-id="fokus_intro_p4_format">
+                <option value="text">Običan tekst</option>
+                <option value="bullets">Natuknice (svaki red = bullet point)</option>
+            </select>
+        </div>
+        <div class="field-group">
+            <label>Paragraf 4 - Sadržaj (opcionalno)</label>
+            <textarea data-table="index_content" data-id="fokus_intro_p4" placeholder="Za natuknice, svaki red postaje bullet point:&#10;Prva natuknica&#10;Druga natuknica&#10;Treća natuknica&#10;&#10;Za obični tekst, piši normalno."></textarea>
+        </div>
+    </div>
+
+    <div class="section-group">
+        <h3>Stup F — Filter</h3>
+        <div class="field-group"><label>Naslov</label><input type="text" data-table="index_content" data-id="pillar_f_title"></div>
+        <div class="field-group"><label>Paragraf 1</label><textarea data-table="index_content" data-id="pillar_f_p1"></textarea></div>
+        <div class="field-group"><label>Paragraf 2</label><textarea data-table="index_content" data-id="pillar_f_p2"></textarea></div>
+        <div class="field-group"><label>Paragraf 3</label><textarea data-table="index_content" data-id="pillar_f_p3"></textarea></div>
+    </div>
+
+    <div class="section-group">
+        <h3>Stup O — Odluka</h3>
+        <div class="field-group"><label>Naslov</label><input type="text" data-table="index_content" data-id="pillar_o_title"></div>
+        <div class="field-group"><label>Paragraf 1</label><textarea data-table="index_content" data-id="pillar_o_p1"></textarea></div>
+        <div class="field-group"><label>Paragraf 2</label><textarea data-table="index_content" data-id="pillar_o_p2"></textarea></div>
+        <div class="field-group"><label>Paragraf 3</label><textarea data-table="index_content" data-id="pillar_o_p3"></textarea></div>
+    </div>
+
+    <div class="section-group">
+        <h3>Stup K — Kontrola</h3>
+        <div class="field-group"><label>Naslov</label><input type="text" data-table="index_content" data-id="pillar_k_title"></div>
+        <div class="field-group"><label>Paragraf 1</label><textarea data-table="index_content" data-id="pillar_k_p1"></textarea></div>
+        <div class="field-group"><label>Paragraf 2</label><textarea data-table="index_content" data-id="pillar_k_p2"></textarea></div>
+    </div>
+
+    <div class="section-group">
+        <h3>Stup U — Usklađenost</h3>
+        <div class="field-group"><label>Naslov</label><input type="text" data-table="index_content" data-id="pillar_u_title"></div>
+        <div class="field-group"><label>Paragraf 1</label><textarea data-table="index_content" data-id="pillar_u_p1"></textarea></div>
+        <div class="field-group"><label>Paragraf 2</label><textarea data-table="index_content" data-id="pillar_u_p2"></textarea></div>
+        <div class="field-group"><label>Paragraf 3</label><textarea data-table="index_content" data-id="pillar_u_p3"></textarea></div>
+    </div>
+
+    <div class="section-group">
+        <h3>Stup S — Stabilnost</h3>
+        <div class="field-group"><label>Naslov</label><input type="text" data-table="index_content" data-id="pillar_s_title"></div>
+        <div class="field-group"><label>Paragraf 1</label><textarea data-table="index_content" data-id="pillar_s_p1"></textarea></div>
+        <div class="field-group"><label>Paragraf 2</label><textarea data-table="index_content" data-id="pillar_s_p2"></textarea></div>
+        <div class="field-group"><label>Paragraf 3</label><textarea data-table="index_content" data-id="pillar_s_p3"></textarea></div>
+    </div>
+
+    <div class="section-group">
+        <h3>Newsletter sekcija</h3>
+        <div class="field-group"><label>Naslov</label><textarea data-table="index_content" data-id="newsletter_title"></textarea></div>
+        <div class="field-group"><label>Paragraf 1</label><textarea data-table="index_content" data-id="newsletter_p1"></textarea></div>
+        <div class="field-group"><label>Paragraf 2</label><textarea data-table="index_content" data-id="newsletter_p2"></textarea></div>
+        <div class="field-group"><label>Paragraf 3</label><textarea data-table="index_content" data-id="newsletter_p3"></textarea></div>
+        <div class="field-group"><label>Napomena ispod forme</label><textarea data-table="index_content" data-id="newsletter_note"></textarea></div>
+    </div>
+
+    <div class="section-group">
+        <h3>Footer</h3>
+        <div class="field-group"><label>Copyright tekst</label><input type="text" data-table="index_content" data-id="footer_copyright"></div>
+        <div class="field-group"><label>Adresa</label><input type="text" data-table="index_content" data-id="footer_address"></div>
+    </div>
+</div>
+
+<!-- O MENI TAB -->
+<div class="tab-content" id="tab-omeni">
+
+    <div class="section-group">
+        <h3>Naslov stranice</h3>
+        <div class="field-group"><label>Naslov (H1)</label><input type="text" data-table="omeni_content" data-id="page_title"></div>
+    </div>
+
+    <div class="section-group">
+        <h3>Uvodni blok</h3>
+        <div class="field-group"><label>Podnaslov</label><input type="text" data-table="omeni_content" data-id="intro_title"></div>
+        <div class="field-group"><label>Paragraf 1</label><textarea class="tall" data-table="omeni_content" data-id="intro_p1"></textarea></div>
+        <div class="field-group"><label>Paragraf 2</label><textarea data-table="omeni_content" data-id="intro_p2"></textarea></div>
+    </div>
+
+    <div class="section-group">
+        <h3>Glavni tekst</h3>
+        <div class="field-group"><label>Paragraf 1</label><textarea data-table="omeni_content" data-id="p1"></textarea></div>
+        <div class="field-group"><label>Paragraf 2</label><textarea data-table="omeni_content" data-id="p2"></textarea></div>
+        <div class="field-group"><label>Paragraf 3</label><textarea data-table="omeni_content" data-id="p3"></textarea></div>
+        <div class="field-group"><label>Paragraf 4</label><textarea data-table="omeni_content" data-id="p4"></textarea></div>
+    </div>
+
+    <div class="section-group">
+        <h3>Istaknuti blok 1</h3>
+        <div class="field-group"><label>Naslov</label><textarea data-table="omeni_content" data-id="highlight1_title"></textarea></div>
+    </div>
+
+    <div class="section-group">
+        <h3>Tekst nakon prvog bloka</h3>
+        <div class="field-group"><label>Paragraf 5</label><textarea data-table="omeni_content" data-id="p5"></textarea></div>
+        <div class="field-group"><label>Paragraf 6</label><textarea data-table="omeni_content" data-id="p6"></textarea></div>
+        <div class="field-group"><label>Paragraf 7</label><textarea data-table="omeni_content" data-id="p7"></textarea></div>
+        <div class="field-group"><label>Paragraf 8</label><textarea data-table="omeni_content" data-id="p8"></textarea></div>
+        <div class="field-group"><label>Paragraf 9</label><textarea data-table="omeni_content" data-id="p9"></textarea></div>
+        <div class="field-group"><label>Paragraf 10</label><textarea data-table="omeni_content" data-id="p10"></textarea></div>
+    </div>
+
+    <div class="section-group">
+        <h3>Istaknuti blok 2</h3>
+        <div class="field-group"><label>Naslov</label><textarea data-table="omeni_content" data-id="highlight2_title"></textarea></div>
+        <div class="field-group"><label>Tekst ispod naslova</label><textarea data-table="omeni_content" data-id="highlight2_p"></textarea></div>
+    </div>
+
+    <div class="section-group">
+        <h3>Tekst nakon drugog bloka</h3>
+        <div class="field-group"><label>Paragraf 11</label><textarea data-table="omeni_content" data-id="p11"></textarea></div>
+        <div class="field-group"><label>Paragraf 12</label><textarea data-table="omeni_content" data-id="p12"></textarea></div>
+        <div class="field-group"><label>Paragraf 13</label><textarea data-table="omeni_content" data-id="p13"></textarea></div>
+        <div class="field-group"><label>Paragraf 14</label><textarea data-table="omeni_content" data-id="p14"></textarea></div>
+    </div>
+
+    <div class="section-group">
+        <h3>FOKUS blok</h3>
+        <div class="field-group"><label>Naslov</label><input type="text" data-table="omeni_content" data-id="fokus_section_title"></div>
+        <div class="field-group"><label>Tekst</label><textarea data-table="omeni_content" data-id="fokus_section_p"></textarea></div>
+        <div class="field-group"><label>Tekst gumba</label><input type="text" data-table="omeni_content" data-id="cta_button"></div>
+    </div>
+
+    <div class="section-group">
+        <h3>Footer</h3>
+        <div class="field-group"><label>Copyright tekst</label><input type="text" data-table="omeni_content" data-id="footer_copyright"></div>
+        <div class="field-group"><label>Adresa</label><input type="text" data-table="omeni_content" data-id="footer_address"></div>
+    </div>
+</div>
+
+<!-- KONTAKT TAB -->
+<div class="tab-content" id="tab-kontakt">
+    <div class="section-group">
+        <h3>Kontakt stranica</h3>
+        <div class="field-group"><label>Naslov (H1)</label><input type="text" data-table="kontakt_content" data-id="page_title"></div>
+        <div class="field-group"><label>Uvodni tekst</label><textarea data-table="kontakt_content" data-id="intro"></textarea></div>
+    </div>
+
+    <div class="section-group">
+        <h3>Forma labele</h3>
+        <div class="field-group"><label>Label — Ime i prezime</label><input type="text" data-table="kontakt_content" data-id="label_name"></div>
+        <div class="field-group"><label>Label — Email</label><input type="text" data-table="kontakt_content" data-id="label_email"></div>
+        <div class="field-group"><label>Label — Poruka</label><input type="text" data-table="kontakt_content" data-id="label_message"></div>
+        <div class="field-group"><label>Tekst gumba</label><input type="text" data-table="kontakt_content" data-id="submit_button"></div>
+        <div class="field-group"><label>Poruka uspjeha</label><input type="text" data-table="kontakt_content" data-id="success_message"></div>
+    </div>
+
+    <div class="section-group">
+        <h3>Footer</h3>
+        <div class="field-group"><label>Copyright tekst</label><input type="text" data-table="kontakt_content" data-id="footer_copyright"></div>
+        <div class="field-group"><label>Adresa</label><input type="text" data-table="kontakt_content" data-id="footer_address"></div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Load config from external file -->
+<script src="config.js"></script>
+
+<!-- Admin Script -->
+<script>
+const TABLES = ['index_content', 'omeni_content', 'kontakt_content'];
+
+async function loadAll() {
+    try {
+        await Promise.all(TABLES.map(loadTable));
+    } catch (e) {
+        showToast('Greška pri učitavanju!', true);
+    }
+    document.getElementById('loadingOverlay').classList.add('hidden');
+}
+
+async function loadTable(table) {
+    const res = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/${table}?select=id,value`, {
+        headers: { 
+            apikey: CONFIG.SUPABASE_ANON_KEY, 
+            Authorization: `Bearer ${CONFIG.SUPABASE_ANON_KEY}` 
+        }
+    });
+    const rows = await res.json();
+    rows.forEach(({ id, value }) => {
+        const el = document.querySelector(`[data-table="${table}"][data-id="${id}"]`);
+        if (el) el.value = value;
+    });
+}
+
+async function saveAll() {
+    const fields = document.querySelectorAll('[data-table][data-id]');
+    const byTable = {};
+
+    fields.forEach(el => {
+        const table = el.dataset.table;
+        const id = el.dataset.id;
+        const value = el.value;
+        if (!byTable[table]) byTable[table] = [];
+        byTable[table].push({ id, value });
+    });
+
+    try {
+        await Promise.all(
+            Object.entries(byTable).map(([table, rows]) => upsertRows(table, rows))
+        );
+        showToast('✅ Sve promjene su spremljene!');
+    } catch (e) {
+        showToast('❌ Greška pri spremanju!', true);
+    }
+}
+
+async function upsertRows(table, rows) {
+    const res = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/${table}`, {
+        method: 'POST',
+        headers: {
+            apikey: CONFIG.SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${CONFIG.SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+            Prefer: 'resolution=merge-duplicates'
+        },
+        body: JSON.stringify(rows.map(r => ({ 
+            id: r.id, 
+            value: r.value, 
+            updated_at: new Date().toISOString() 
+        })))
+    });
+    if (!res.ok) throw new Error(`Failed to save ${table}`);
+}
+
+function switchTab(name) {
+    document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', ['index','omeni','kontakt'][i] === name);
+    });
+    document.querySelectorAll('.tab-content').forEach(t => {
+        t.classList.toggle('active', t.id === `tab-${name}`);
+    });
+}
+
+function showToast(msg, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.className = `toast show${isError ? ' error' : ''}`;
+    setTimeout(() => toast.className = 'toast', 3000);
+}
+
+loadAll();
+</script>
+
+</body>
+</html>

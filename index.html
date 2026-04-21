@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOKUS™ - Fizioterapija Mentorstvo</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="akrion-logo.webp" as="image">
+    <link rel="preload" href="slika.jpg" as="image">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary-blue: #4259A8;
+            --dark: #282828;
+            --off-white: #F0EFEF;
+            --blue-hover: #36478a;
+        }
+        
+        body { 
+            font-family: 'Georgia', 'Times New Roman', serif; 
+            line-height: 1.8; 
+            color: #333; 
+            background: #fff; 
+            padding-top: 20px; 
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Loading Screen */
+        .loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .loader-wrapper.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loader {
+            text-align: center;
+        }
+        
+        .loader-circle {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--off-white);
+            border-top: 4px solid var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        .loader-text {
+            font-size: 1.5em;
+            color: var(--primary-blue);
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        nav {
+            margin: 0 auto;
+            padding: 0 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary-blue);
+            text-decoration: none;
+            height: fit-content;
+            display: flex;
+            padding: 10px;
+        }
+        
+        .logo img {
+            max-width: 50px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-size: 1em;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-blue);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-blue);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+        
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--dark);
+            transition: all 0.3s ease;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: white;
+            color: var(--dark);
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: stretch;
+        }
+        
+        .hero-container {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+        }
+        
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 80px 60px;
+            text-align: left;
+            background: var(--off-white);
+        }
+        
+        .hero h1 {
+            font-size: 3em;
+            margin-bottom: 30px;
+            color: var(--primary-blue);
+            font-weight: normal;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.2em;
+            margin-bottom: 25px;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: var(--primary-blue);
+            color: white;
+            padding: 18px 45px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .cta-button:hover {
+            background: var(--blue-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(66,89,168,0.3);
+        }
+        
+        /* About Section */
+        .about {
+            padding: 100px 20px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .about::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            background-image: url('akrion-logo.webp');
+            background-size: 110%;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.10;
+            filter: blur(1px);
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .about-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        
+        .about-image-container {
+            position: relative;
+            padding: 20px;
+        }
+        
+        .about-image-bg {
+            position: absolute;
+            top: 0;
+            left: -10px;
+            width: 80%;
+            height: 80%;
+            background: var(--primary-blue);
+            opacity: 0.1;
+            border-radius: 10px;
+            z-index: 0;
+        }
+        
+        .about-image {
+            position: relative;
+            z-index: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(66,89,168,0.2);
+        }
+        
+        .about-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .about-content-wrapper {
+            padding: 20px;
+        }
+        
+        .about h2 {
+            font-size: 2.5em;
+            color: var(--primary-blue);
+            margin-bottom: 40px;
+            text-align: center;
+            font-weight: normal;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .about-text {
+            font-size: 1.1em;
+            line-height: 1.9;
+            color: var(--dark);
+        }
+        
+        .about-text p {
+            margin-bottom: 20px;
+        }
+        
+        /* FOKUS System Section */
+        .clear-system {
+            padding: 100px 20px;
+            background: var(--off-white);
+        }
+        
+        .clear-intro {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto 80px auto;
+        }
+        
+        .clear-intro h2 {
+            font-size: 3em;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+        }
+        
+        .clear-intro blockquote {
+            font-size: 1.5em;
+            color: var(--dark);
+            font-style: italic;
+            margin: 30px 0;
+        }
+        
+        .clear-intro p {
+            color: var(--dark);
+            font-size: 1.15em;
+            line-height: 1.8;
+            margin-top: 20px;
+        }
+        
+        .clear-pillars {
+            display: grid;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .pillar {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary-blue);
+            transition: transform 0.3s ease;
+        }
+        
+        .pillar:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(66,89,168,0.2);
+        }
+        
+        .pillar h4 {
+            font-size: 2em;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+        }
+        
+        .pillar p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        /* Newsletter Section */
+        .newsletter {
+            padding: 100px 20px;
+            background: var(--off-white);
+        }
+        
+        .newsletter-content {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .newsletter h2 {
+            font-size: 2.5em;
+            color: var(--primary-blue);
+            margin-bottom: 30px;
+        }
+        
+        .newsletter p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            line-height: 1.8;
+            color: var(--dark);
+        }
+        
+        .newsletter-form {
+            margin-top: 50px;
+        }
+        
+        .form-note {
+            font-size: 0.95em;
+            color: #666;
+            margin-top: 20px;
+            font-style: italic;
+        }
+        
+        .ml-form-embedWrapper.embedForm {
+            max-width: unset !important;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-top: 1px solid #ddd;
+        }
+        
+        footer p {
+            margin: 5px 0;
+            font-size: 0.95em;
+            color: #666;
+        }
+        
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 968px) {
+            body {
+                padding-top: 70px;
+            }
+            
+            nav {
+                padding: 15px 20px;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                padding: 20px;
+                gap: 20px;
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+                transition: left 0.3s ease;
+            }
+            
+            .nav-links.active {
+                left: 0;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+            
+            .menu-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(7px, 7px);
+            }
+            
+            .menu-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+            
+            .menu-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -7px);
+            }
+            
+            .hero-container {
+                grid-template-columns: 1fr;
+                min-height: auto;
+            }
+            
+            .hero-content {
+                padding: 60px 30px;
+                text-align: center;
+            }
+            
+            .hero h1 {
+                font-size: 2.2em;
+            }
+            
+            .hero-image {
+                min-height: 400px;
+            }
+            
+            .about-wrapper {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .about h2 {
+                font-size: 2em;
+            }
+            
+            .newsletter h2, .clear-intro h2 {
+                font-size: 2em;
+            }
+            
+            .pillar h4 {
+                font-size: 1.6em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div id="loader" class="loader-wrapper">
+    <div class="loader">
+        <div class="loader-circle"></div>
+        <div class="loader-text">FOKUS™</div>
+    </div>
+</div>
+
+<!-- Header -->
+<header>
+    <nav>
+        <a href="#" class="logo">
+            <img src="akrion-logo.webp" alt="Akrion Logo">
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#home">Početna</a></li>
+            <li><a href="o-meni.html">O meni</a></li>
+            <li><a href="#clear">FOKUS™</a></li>
+            <li><a href="#newsletter">Newsletter</a></li>
+            <li><a href="kontakt.html">Kontakt</a></li>
+        </ul>
+        <div class="menu-toggle" id="menuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+</header>
+
+<!-- Hero Section -->
+<section id="home" class="hero">
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1 id="hero_title">Nauči kako izgraditi zdravstveni sustav koji vrijedi.</h1>
+            <p id="hero_subtitle_1">Ne nudim hype ni trikove. Pišem o strukturi, prioritizaciji i načinu razmišljanja koji dijeli zdravstvenu praksu od improvizacije.</p>
+            <p id="hero_subtitle_2">Bez improvizacije u procesu, jer struktura je razlika između rada i biznisa.</p>
+            <a href="#newsletter" class="cta-button" id="hero_cta">Želim strukturu</a>
+        </div>
+        <div class="hero-image">
+            <img src="slika.jpg" alt="Akrion Academy Workshop">
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="about">
+    <h2 id="about_section_title">Zašto FOKUS™?</h2>
+    <div class="about-wrapper">
+        <div class="about-image-container">
+            <div class="about-image-bg"></div>
+            <div class="about-image">
+                <img src="dejan-novo.webp" alt="Dejan Gvoić - Fizioterapeut">
+            </div>
+        </div>
+        <div class="about-content-wrapper">
+            <div class="about-text">
+                <p id="about_p1">Većina fizioterapeuta vodi privatnu praksu kao improvizaciju – bez jasnih procesa, sustava ili strategije. Fokusirani su na tehnike, ne na strukturu koja dijeli hobi od poslovnog modela koji radi.</p>
+                <p id="about_p2">FOKUS™ je sistem koji sam razvio kroz 10+ godina rada s pacijentima, vođenjem privatnih praksi i obrazovanjem fizioterapeuta. Ne učim o tehnikama – njih već znaš. Učim o tome kako izgraditi klinički sustav koji stabilno donosi rezultate.</p>
+                <p id="about_p3">Sustav počinje prioritetima, ne motivacijom. Odlukama koje se donose jednom, ne svaki dan. Procesima koji rade umjesto tebe. I metrikom koja pokazuje što funkcionira, a što ne.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOKUS System Section -->
+<section id="clear" class="clear-system">
+    <div class="container">
+        <div class="clear-intro">
+            <h2>FOKUS™</h2>
+            <blockquote id="fokus_intro_quote">"Struktura nije ograničenje – to je preduvjet za stabilnost."</blockquote>
+            <p id="fokus_intro_p1">FOKUS™ nije motivacijski program. To je pristup koji definira kako izgraditi zdravstveni sustav koji radi – bez improvizacije u procesu, jer struktura je razlika između rada i biznisa.</p>
+            <p id="fokus_intro_p2">Sustav se temelji na pet stupova koji pokrivaju svaki segment privatne prakse – od načina na koji definirate prioritete do načina na koji mjerite napredak.</p>
+            <p id="fokus_intro_p3">Svaki stup je direktna implikacija jedne odluke koju donosiš jednom – ne svaki dan.</p>
+            
+            <!-- PARAGRAF 4 - Dinamički prikaz -->
+            <div id="fokus_intro_p4_container"></div>
+        </div>
+        
+        <div class="clear-pillars">
+            <!-- Filter -->
+            <div class="pillar">
+                <h4 id="pillar_f_title">F = Filter (prioriteti)</h4>
+                <p id="pillar_f_p1">Najveći problem nije nedostatak ideja – to je nedostatak fokusa. Filter je mehanizam koji odvaja ono što je važno od onoga što samo izgleda hitno.</p>
+                <p id="pillar_f_p2">Umjesto da se svaki dan pitaš "što bi trebao raditi", Filter definira prioritetni sustav jednom – i primjenjuje ga dosljedno.</p>
+                <p id="pillar_f_p3">To nije motivacijski alat. To je strukturna odluka – koje stvari ulaze u sustav, a koje ne.</p>
+            </div>
+            
+            <!-- Odluka -->
+            <div class="pillar">
+                <h4 id="pillar_o_title">O = Odluka (strategija umjesto improvizacije)</h4>
+                <p id="pillar_o_p1">Odluke koje donosiš svaki dan nisu strateške – to su improvizacije. Odluka je mehanizam koji definira jednom kako se situacija rješava – i primjenjuje se svaki put kada se pojavi.</p>
+                <p id="pillar_o_p2">Privatna praksa koja radi ima jasnu strategiju – ne "ovisno o situaciji". Zato u sistemu FOKUS™ većina odluka nije aktivna – one su već donesene.</p>
+                <p id="pillar_o_p3">To nije kontrola. To je stabilnost.</p>
+            </div>
+            
+            <!-- Kontrola -->
+            <div class="pillar">
+                <h4 id="pillar_k_title">K = Kontrola (standardizacija procesa)</h4>
+                <p id="pillar_k_p1">Kontrola nije mikromenadžment. To je sustav koji osigurava da proces radi dosljedno – bez obzira tko ga izvodi i kada.</p>
+                <p id="pillar_k_p2">Svaki proces u privatnoj praksi može biti standardiziran – pregled pacijenta, obrada upita, plan terapije. Pitanje je hoćeš li to napraviti ili ćeš svaki put improvizirati.</p>
+            </div>
+            
+            <!-- Usklađenost -->
+            <div class="pillar">
+                <h4 id="pillar_u_title">U = Usklađenost (alignment između vrijednosti i procesa)</h4>
+                <p id="pillar_u_p1">Usklađenost znači da sustav koji gradiš odražava prioritete koje imaš – ne ono što si "trebao" imati.</p>
+                <p id="pillar_u_p2">Sustav koji nije usklađen s tvojim vrijednostima nije održiv. Ne zato što si nemotivirani – nego zato što radiš protiv sebe.</p>
+                <p id="pillar_u_p3">Zato FOKUS™ počinje pitanjem: što želiš da praksa bude – i gradi sustav oko tog odgovora.</p>
+            </div>
+            
+            <!-- Stabilnost -->
+            <div class="pillar">
+                <h4 id="pillar_s_title">S = Stabilnost (metrika i mjerenje napretka)</h4>
+                <p id="pillar_s_p1">Stabilnost ne dolazi iz osjećaja – dolazi iz metrike. Svaki segment sustava mora biti mjerljiv – ne zato da budeš opterećen brojevima, nego zato da znaš što funkcionira.</p>
+                <p id="pillar_s_p2">Praksa koja ne mjeri napredak ne raste – improvizira. Zato FOKUS™ zahtijeva definirane metrike za svaki proces – od broja pacijenata do stope konverzije.</p>
+                <p id="pillar_s_p3">To nije opterećenje. To je jedini način da znaš jesam li na pravom putu.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section id="newsletter" class="newsletter">
+    <div class="newsletter-content">
+        <h2 id="newsletter_title">Newsletter</h2>
+        <p id="newsletter_p1">Ne nudim masovne savjete ni motivacijske poruke o poslovanju. U newsletteru dijelim način na koji razmišljam o strukturi, pozicioniranju i razvoju privatne zdravstvene prakse.</p>
+        <p id="newsletter_p2">Pišem o sistemima koji rade – ne o tehnikama koje privremeno poboljšavaju rezultat. O odlukama koje definiraju praksu jednom – ne o improvizacijama koje se ponavljaju svaki dan.</p>
+        <p id="newsletter_p3">Ako tražiš brzu formulu, to nije newsletter za tebe. Ako tražiš sustav koji radi – priključi se.</p>
+        
+        <div class="newsletter-form">
+            <div class="ml-embedded" data-form="hwwiVL"></div>
+            <p class="form-note" id="newsletter_note">Prijavom daješ pristanak za primanje newslettera. Nema spam sadržaja – samo konkretni uvidi.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <p id="footer_copyright">&copy; 2026 FOKUS™. Sva prava pridržana.</p>
+        <p id="footer_address">Akrion akademija | Labin, Hrvatska</p>
+    </div>
+</footer>
+
+<!-- Load config from external file (generated during build) -->
+<script src="config.js"></script>
+
+<!-- Main Scripts -->
+<script>
+// Load content from Supabase
+async function loadContent() {
+    try {
+        const res = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/index_content?select=id,value`, {
+            headers: { 
+                apikey: CONFIG.SUPABASE_ANON_KEY, 
+                Authorization: `Bearer ${CONFIG.SUPABASE_ANON_KEY}` 
+            }
+        });
+        const rows = await res.json();
+        
+        let p4Content = '';
+        let p4Format = 'text';
+        
+        rows.forEach(({ id, value }) => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.textContent = value;
+            }
+            
+            if (id === 'fokus_intro_p4') {
+                p4Content = value || '';
+            }
+            if (id === 'fokus_intro_p4_format') {
+                p4Format = value || 'text';
+            }
+        });
+        
+        renderParagraph4(p4Content, p4Format);
+        
+    } catch (e) {
+        console.error('Failed to load content:', e);
+    }
+}
+
+function renderParagraph4(content, format) {
+    const container = document.getElementById('fokus_intro_p4_container');
+    
+    if (!content || !content.trim()) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    if (format === 'bullets') {
+        const bullets = content.trim().split('\n').filter(line => line.trim());
+        if (bullets.length > 0) {
+            container.innerHTML = `
+                <ul style="list-style: disc; margin: 20px 0 20px 40px; font-size: 1.15em; line-height: 1.8; text-align: left; color: var(--dark);">
+                    ${bullets.map(bullet => `<li>${bullet.trim()}</li>`).join('')}
+                </ul>
+            `;
+        }
+    } else {
+        container.innerHTML = `
+            <p style="font-size: 1.15em; line-height: 1.8; margin-top: 20px; color: var(--dark);">
+                ${content.trim()}
+            </p>
+        `;
+    }
+}
+
+// Hide loader when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    const loader = document.getElementById('loader');
+    
+    setTimeout(function() {
+        loader.classList.add('hidden');
+        setTimeout(function() {
+            loader.remove();
+        }, 300);
+    }, 300);
+    
+    loadContent();
+});
+
+// Mobile Menu Toggle
+const menuToggle = document.getElementById('menuToggle');
+const navLinks = document.getElementById('navLinks');
+
+menuToggle.addEventListener('click', function() {
+    menuToggle.classList.toggle('active');
+    navLinks.classList.toggle('active');
+});
+
+navLinks.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+        menuToggle.classList.remove('active');
+        navLinks.classList.remove('active');
+    });
+});
+</script>
+
+<!-- MailerLite Script -->
+<script>
+(function(w,d,e,u,f,l,n){w[f]=w[f]||function(){(w[f].q=w[f].q||[]).push(arguments);},
+l=d.createElement(e),l.async=1,l.src=u,n=d.getElementsByTagName(e)[0],n.parentNode.insertBefore(l,n);})
+(window,document,'script','https://assets.mailerlite.com/js/universal.js','ml');
+ml('account', '2110615');
+</script>
+
+</body>
+</html>

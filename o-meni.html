@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O meni - Dejan Gvoić | FOKUS™</title>
+    
+    <link rel="preload" href="akrion-logo.webp" as="image">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { 
+            --primary-blue: #4259A8; 
+            --dark: #282828; 
+            --off-white: #F0EFEF; 
+            --blue-hover: #36478a; 
+        }
+        
+        body { 
+            font-family: 'Georgia', 'Times New Roman', serif; 
+            line-height: 1.8; 
+            color: var(--dark); 
+            background: #fff; 
+            padding-top: 20px; 
+        }
+        
+        .loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .loader-wrapper.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loader {
+            text-align: center;
+        }
+        
+        .loader-circle {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--off-white);
+            border-top: 4px solid var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        .loader-text {
+            font-size: 1.5em;
+            color: var(--primary-blue);
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        header { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            background: white; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+            z-index: 1000; 
+        }
+        
+        nav { 
+            margin: 0 auto; 
+            padding: 0 60px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .logo { 
+            font-size: 1.5em; 
+            font-weight: bold; 
+            color: var(--primary-blue); 
+            text-decoration: none; 
+            height: fit-content; 
+            display: flex; 
+            padding: 10px; 
+        }
+        
+        .logo img { 
+            max-width: 50px; 
+        }
+        
+        .nav-links { 
+            display: flex; 
+            list-style: none; 
+            gap: 40px; 
+        }
+        
+        .nav-links a { 
+            text-decoration: none; 
+            color: var(--dark); 
+            font-size: 1em; 
+            transition: color 0.3s ease; 
+            position: relative; 
+        }
+        
+        .nav-links a:hover { 
+            color: var(--primary-blue); 
+        }
+        
+        .nav-links a::after { 
+            content: ''; 
+            position: absolute; 
+            bottom: -5px; 
+            left: 0; 
+            width: 0; 
+            height: 2px; 
+            background: var(--primary-blue); 
+            transition: width 0.3s ease; 
+        }
+        
+        .nav-links a:hover::after { 
+            width: 100%; 
+        }
+        
+        .menu-toggle { 
+            display: none; 
+            flex-direction: column; 
+            cursor: pointer; 
+            gap: 5px; 
+        }
+        
+        .menu-toggle span { 
+            width: 25px; 
+            height: 3px; 
+            background: var(--dark); 
+            transition: all 0.3s ease; 
+        }
+        
+        .about-page { 
+            padding: 80px 20px; 
+            background: white; 
+            position: relative; 
+            overflow: hidden; 
+        }
+        
+        .about-page::before { 
+            content: ''; 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            width: 100%; 
+            height: 100%; 
+            background-image: url('akrion-logo.webp'); 
+            background-size: 110%; 
+            background-repeat: no-repeat; 
+            background-position: center; 
+            opacity: 0.10; 
+            filter: blur(1px);
+            z-index: 0; 
+            pointer-events: none; 
+        }
+        
+        .about-content { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            position: relative; 
+            z-index: 1; 
+        }
+        
+        .about-page h1 { 
+            font-size: 3em; 
+            color: var(--primary-blue); 
+            margin-bottom: 40px; 
+            text-align: center; 
+        }
+        
+        .about-intro { 
+            background: var(--off-white); 
+            padding: 40px; 
+            border-radius: 10px; 
+            border-left: 5px solid var(--primary-blue); 
+            margin-bottom: 40px; 
+        }
+        
+        .about-intro h2 { 
+            color: var(--primary-blue); 
+            font-size: 1.8em; 
+            margin-bottom: 20px; 
+        }
+        
+        .about-intro p { 
+            margin-bottom: 20px; 
+        }
+        
+        .about-page p { 
+            font-size: 1.15em; 
+            line-height: 1.9; 
+            margin-bottom: 25px; 
+            color: var(--dark); 
+        }
+        
+        .highlight-box { 
+            background: var(--primary-blue); 
+            color: white; 
+            padding: 40px; 
+            border-radius: 10px; 
+            margin: 40px 0; 
+            text-align: center; 
+        }
+        
+        .highlight-box h3 { 
+            font-size: 1.8em; 
+            margin-bottom: 15px; 
+            line-height: 1.4; 
+        }
+        
+        .highlight-box p { 
+            color: white; 
+            font-size: 1.1em; 
+            margin: 0; 
+        }
+        
+        .cta-button { 
+            display: inline-block; 
+            background: white; 
+            color: var(--primary-blue); 
+            padding: 18px 45px; 
+            text-decoration: none; 
+            border-radius: 50px; 
+            font-size: 1.1em; 
+            font-weight: bold; 
+            transition: all 0.3s ease; 
+            margin-top: 30px; 
+        }
+        
+        .cta-button:hover { 
+            background: var(--off-white); 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 25px rgba(66,89,168,0.3); 
+        }
+        
+        .focus-section { 
+            background: var(--off-white); 
+            padding: 40px; 
+            border-radius: 10px; 
+            margin: 40px 0; 
+            text-align: center; 
+        }
+        
+        .focus-section h3 { 
+            color: var(--primary-blue); 
+            font-size: 2em; 
+            margin-bottom: 20px; 
+        }
+        
+        footer { 
+            background: white; 
+            color: var(--dark); 
+            padding: 40px 20px; 
+            text-align: center; 
+            border-top: 1px solid #ddd; 
+            margin-top: 80px; 
+        }
+        
+        footer p { 
+            margin: 5px 0; 
+            font-size: 0.95em; 
+            color: #666; 
+        }
+        
+        html { 
+            scroll-behavior: smooth; 
+        }
+        
+        @media (max-width: 768px) {
+            body { 
+                padding-top: 70px; 
+            }
+            
+            nav { 
+                padding: 15px 20px; 
+            }
+            
+            .nav-links { 
+                position: fixed; 
+                top: 70px; 
+                left: -100%; 
+                width: 100%; 
+                background: white; 
+                flex-direction: column; 
+                padding: 20px; 
+                gap: 20px; 
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1); 
+                transition: left 0.3s ease; 
+            }
+            
+            .nav-links.active { 
+                left: 0; 
+            }
+            
+            .menu-toggle { 
+                display: flex; 
+            }
+            
+            .menu-toggle.active span:nth-child(1) { 
+                transform: rotate(45deg) translate(7px, 7px); 
+            }
+            
+            .menu-toggle.active span:nth-child(2) { 
+                opacity: 0; 
+            }
+            
+            .menu-toggle.active span:nth-child(3) { 
+                transform: rotate(-45deg) translate(7px, -7px); 
+            }
+            
+            .about-page { 
+                padding: 40px 20px; 
+            }
+            
+            .about-page h1 { 
+                font-size: 2em; 
+            }
+            
+            .about-intro { 
+                padding: 25px; 
+            }
+            
+            .highlight-box { 
+                padding: 30px 20px; 
+            }
+            
+            .highlight-box h3 { 
+                font-size: 1.4em; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="loader" class="loader-wrapper">
+    <div class="loader">
+        <div class="loader-circle"></div>
+        <div class="loader-text">FOKUS™</div>
+    </div>
+</div>
+
+<header>
+    <nav>
+        <a href="index.html" class="logo">
+            <img src="akrion-logo.webp" alt="Akrion Logo">
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="index.html#home">Početna</a></li>
+            <li><a href="o-meni.html">O meni</a></li>
+            <li><a href="index.html#clear">FOKUS™</a></li>
+            <li><a href="index.html#newsletter">Newsletter</a></li>
+            <li><a href="kontakt.html">Kontakt</a></li>
+        </ul>
+        <div class="menu-toggle" id="menuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+</header>
+
+<section class="about-page">
+    <div class="about-content">
+        <h1 id="page_title">O meni</h1>
+
+        <div class="about-intro">
+            <h2 id="intro_title">Tko sam ja?</h2>
+            <p id="intro_p1">Fizioterapeut s više od 10 godina kliničkog rada i iskustvom u vođenju privatne prakse.</p>
+            <p id="intro_p2">Razvio sam FOKUS™ sistem jer sam vidio razliku između fizioterapeuta koji rade i onih koji grade biznis.</p>
+        </div>
+
+        <p id="p1">Osnovao sam Akrion - privatnu kliniku za fizikalnu terapiju u Labinu.</p>
+        <p id="p2">Najmlađi sam osvajač mediteranskog zlata u fizioterapiji.</p>
+        <p id="p3">Ali to nije bilo dovoljno.</p>
+        <p id="p4">Shvatio sam da klinička izvrsnost nije isto što i sustav koji radi.</p>
+
+        <div class="highlight-box">
+            <h3 id="highlight1_title">Tehnika ne gradi praksu. Struktura gradi praksu.</h3>
+        </div>
+
+        <p id="p5">Većina fizioterapeuta uči kako raditi s pacijentima - ne kako voditi praksu.</p>
+        <p id="p6">Fokusirani su na tehnike, ne na sustave.</p>
+        <p id="p7">Na improvizaciju, ne na strukturu.</p>
+        <p id="p8">Na rad, ne na biznis.</p>
+        <p id="p9">FOKUS™ je nastao iz potrebe za sustavom koji funkcionira bez improvizacije.</p>
+        <p id="p10">Sistem koji radi umjesto tebe - ne zato što ne znaš raditi, nego zato što ne možeš raditi sve.</p>
+
+        <div class="highlight-box">
+            <h3 id="highlight2_title">Sustav nije ograničenje - to je preduvjet za stabilnost.</h3>
+            <p id="highlight2_p">Bez strukture, praksa je hobi. Sa strukturom, praksa je biznis.</p>
+        </div>
+
+        <p id="p11">Ne učim o tehnikama jer tehnike već znaš.</p>
+        <p id="p12">Ne nudim motivaciju jer motivacija nestaje.</p>
+        <p id="p13">Učim o načinu razmišljanja koji dijeli improvizaciju od sustava.</p>
+        <p id="p14">O odlukama koje se donose jednom - ne svaki dan.</p>
+
+        <div class="focus-section">
+            <h3 id="fokus_section_title">FOKUS™ je sustav za one koji žele izgraditi praksu koja radi.</h3>
+            <p id="fokus_section_p" style="font-size: 1.15em; color: var(--dark);">Ne hype. Ne trikove. Samo strukturu koja funkcionira.</p>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="kontakt.html" class="cta-button" id="cta_button">Kontaktiraj me</a>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div>
+        <p id="footer_copyright">&copy; 2026 FOKUS™. Sva prava pridržana.</p>
+        <p id="footer_address">Akrion akademija | Labin, Hrvatska</p>
+    </div>
+</footer>
+
+<script src="config.js"></script>
+
+<script>
+async function loadContent() {
+    try {
+        const res = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/omeni_content?select=id,value`, {
+            headers: { 
+                apikey: CONFIG.SUPABASE_ANON_KEY, 
+                Authorization: `Bearer ${CONFIG.SUPABASE_ANON_KEY}` 
+            }
+        });
+        const rows = await res.json();
+        rows.forEach(({ id, value }) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        });
+    } catch (e) {
+        console.error('Failed to load content:', e);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const loader = document.getElementById('loader');
+    
+    setTimeout(function() {
+        loader.classList.add('hidden');
+        setTimeout(function() {
+            loader.remove();
+        }, 300);
+    }, 300);
+    
+    loadContent();
+});
+
+const menuToggle = document.getElementById('menuToggle');
+const navLinks = document.getElementById('navLinks');
+
+menuToggle.addEventListener('click', function() {
+    menuToggle.classList.toggle('active');
+    navLinks.classList.toggle('active');
+});
+
+navLinks.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+        menuToggle.classList.remove('active');
+        navLinks.classList.remove('active');
+    });
+});
+</script>
+
+</body>
+</html>
