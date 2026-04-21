@@ -689,8 +689,6 @@ async function loadContent() {
         const rows = await res.json();
         
         let p4Content = '';
-        let p4Format = 'text';
-        let p4bContent = '';  // NOVO
         
         rows.forEach(({ id, value }) => {
             const el = document.getElementById(id);
@@ -701,26 +699,17 @@ async function loadContent() {
             if (id === 'fokus_intro_p4') {
                 p4Content = value || '';
             }
-            if (id === 'fokus_intro_p4_format') {
-                p4Format = value || 'text';
-            }
-            if (id === 'fokus_intro_p4b') {  // NOVO
-                p4bContent = value || '';
-            }
         });
         
-        // Render paragraf 4 (text ili bullets)
-        renderParagraph4(p4Content, p4Format);
-        
-        // Render paragraf 4B (uvijek bullets)
-        renderParagraph4B(p4bContent);  // NOVO
+        // Render paragraf 4 sa <br> za nove redove
+        renderParagraph4(p4Content);
         
     } catch (e) {
         console.error('Failed to load content:', e);
     }
 }
 
-function renderParagraph4(content, format) {
+function renderParagraph4(content) {
     const container = document.getElementById('fokus_intro_p4_container');
     
     if (!content || !content.trim()) {
@@ -728,40 +717,14 @@ function renderParagraph4(content, format) {
         return;
     }
     
-    if (format === 'bullets') {
-        const bullets = content.trim().split('\n').filter(line => line.trim());
-        if (bullets.length > 0) {
-            container.innerHTML = `
-                <ul style="list-style: disc; margin: 20px 0 20px 40px; font-size: 1.15em; line-height: 1.8; text-align: left; color: var(--dark);">
-                    ${bullets.map(bullet => `<li>${bullet.trim()}</li>`).join('')}
-                </ul>
-            `;
-        }
-    } else {
-        container.innerHTML = `
-            <p style="font-size: 1.15em; line-height: 1.8; margin-top: 20px; color: var(--dark);">
-                ${content.trim()}
-            </p>
-        `;
-    }
-}
-
-// NOVA FUNKCIJA za Paragraf 4B
-function renderParagraph4B(content) {
-    const listEl = document.getElementById('fokus_intro_p4b_list');
+    // Zamijeni \n sa <br> tagovima
+    const formattedContent = content.trim().replace(/\n/g, '<br>');
     
-    if (!content || !content.trim()) {
-        listEl.style.display = 'none';
-        return;
-    }
-    
-    const bullets = content.trim().split('\n').filter(line => line.trim());
-    if (bullets.length > 0) {
-        listEl.innerHTML = bullets.map(bullet => `<li>${bullet.trim()}</li>`).join('');
-        listEl.style.display = 'block';
-    } else {
-        listEl.style.display = 'none';
-    }
+    container.innerHTML = `
+        <p style="font-size: 1.15em; line-height: 1.8; margin-top: 20px; color: var(--dark);">
+            ${formattedContent}
+        </p>
+    `;
 }
 
 // Hide loader when DOM is ready
