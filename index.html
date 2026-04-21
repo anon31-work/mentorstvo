@@ -600,7 +600,10 @@
             <p id="fokus_intro_p3">Svaki stup je direktna implikacija jedne odluke koju donosiš jednom – ne svaki dan.</p>
             
             <!-- PARAGRAF 4 - Dinamički prikaz -->
-            <div id="fokus_intro_p4_container"></div>
+                <div id="fokus_intro_p4_container"></div>
+    
+    <!-- Paragraf 4B - uvijek natuknice -->
+    <ul id="fokus_intro_p4b_list" style="list-style: disc; margin: 20px 0 20px 40px; font-size: 1.15em; line-height: 1.8; text-align: left; display: none;"></ul>
         </div>
         
         <div class="clear-pillars">
@@ -687,6 +690,7 @@ async function loadContent() {
         
         let p4Content = '';
         let p4Format = 'text';
+        let p4bContent = '';  // NOVO
         
         rows.forEach(({ id, value }) => {
             const el = document.getElementById(id);
@@ -700,9 +704,16 @@ async function loadContent() {
             if (id === 'fokus_intro_p4_format') {
                 p4Format = value || 'text';
             }
+            if (id === 'fokus_intro_p4b') {  // NOVO
+                p4bContent = value || '';
+            }
         });
         
+        // Render paragraf 4 (text ili bullets)
         renderParagraph4(p4Content, p4Format);
+        
+        // Render paragraf 4B (uvijek bullets)
+        renderParagraph4B(p4bContent);  // NOVO
         
     } catch (e) {
         console.error('Failed to load content:', e);
@@ -732,6 +743,24 @@ function renderParagraph4(content, format) {
                 ${content.trim()}
             </p>
         `;
+    }
+}
+
+// NOVA FUNKCIJA za Paragraf 4B
+function renderParagraph4B(content) {
+    const listEl = document.getElementById('fokus_intro_p4b_list');
+    
+    if (!content || !content.trim()) {
+        listEl.style.display = 'none';
+        return;
+    }
+    
+    const bullets = content.trim().split('\n').filter(line => line.trim());
+    if (bullets.length > 0) {
+        listEl.innerHTML = bullets.map(bullet => `<li>${bullet.trim()}</li>`).join('');
+        listEl.style.display = 'block';
+    } else {
+        listEl.style.display = 'none';
     }
 }
 
